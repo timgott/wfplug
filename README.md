@@ -1,0 +1,5 @@
+# Dependencies
+
+- `wayfire`
+- `meson`
+- `jq`

@@ -14,14 +14,14 @@ fi
 # find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
 source "$(dirname "$0")/paths.sh"
 
-fullprefix=$installdestdir/$installprefix
+fullprefix=${installdestdir}${installprefix}
 
 if [[ ! -e $fullprefix ]]; then
     >&2 echo wayfireplug warning: No compiled plugin found! Add plugins and run compile_plugins.
 fi
 
 export WAYFIRE_PLUGIN_PATH="$fullprefix/lib/wayfire":"$fullprefix/lib64/wayfire":$WAYFIRE_PLUGIN_PATH
-export WAYFIRE_PLUGIN_XML_PATH="$fullprefix/usr/share/wayfire/metadata":$WAYFIRE_PLUGIN_XML_PATH
+export WAYFIRE_PLUGIN_XML_PATH="$fullprefix/share/wayfire/metadata":$WAYFIRE_PLUGIN_XML_PATH
 
 echo "Enabled wfplug"
 echo "wayfire plugin path: $WAYFIRE_PLUGIN_PATH"

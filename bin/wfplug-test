@@ -68,8 +68,8 @@ if [[ ${#POSITIONAL_ARGS[*]} -gt 2 ]]; then
     exit 1
 fi
 
-PLUGIN=${POSITIONAL_ARGS[0]:?"Missing plugin name argument"}
-CONFIG_NAME=${POSITIONAL_ARGS[1]:-minimal}
+PLUGIN="${POSITIONAL_ARGS[0]:?"Missing plugin name argument"}"
+CONFIG_NAME="${POSITIONAL_ARGS[1]:-minimal}"
 
 # Compile
 wfplug-compile "$PLUGIN"
@@ -112,15 +112,18 @@ if [[ ! -f "$testconfig" ]]; then
     echo Generating config from template "$template"
     if [[ KEEP != true ]]; then
         # put templated config into temp file
-        testconfig=$(mktemp --tmpdir $CONFIG_NAME.$PLUGIN_NAME.XXXX.ini)
+        testconfig=/tmp/wayfire.$CONFIG_NAME.$PLUGIN.ini
     else
         mkdir $pluginconfigpath
     fi
+
+    PLUGIN_LOAD_NAME="$("$basepath/utils/plugin_load_name.sh" "$PLUGIN")"
+
     set -x
-    export TEMPLATE_PLUGIN_NAME="$PLUGIN"
+    export TEMPLATE_PLUGIN_NAME="$PLUGIN_LOAD_NAME"
     <"$template" envsubst '$TEMPLATE_PLUGIN_NAME' >"$testconfig"
 fi
 echo Using config "$testconfig"
 
 # Start wayfire with config file and wayfireplug enabled
-exec wfplug-run_with_env wayfire --config $testconfig
+exec wfplug-run_with_env wayfire --debug --config "$testconfig"

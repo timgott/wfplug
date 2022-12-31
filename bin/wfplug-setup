@@ -1,0 +1,60 @@
+#!/usr/bin/env sh
+
+# runs meson setup, meson compile and meson install
+# TODO: allow passing options (maybe setup should be split into its own command)
+
+set -e
+
+# find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
+source "$(dirname "$0")/paths.sh"
+
+printUsage() {
+    echo "$(basename "$0") PLUGIN_NAME [meson setup options]"
+    echo "$(basename "$0") --all [meson setup options]"
+    echo "Perform meson setup for plugins/PLUGIN_NAME with wfplug directories. If --all is given, loops over all plugins."
+}
+
+printPaths() {
+    echo Plugin path: $pluginroot
+    echo State path: $statepath
+    echo Build cache: $basebuilddir
+    echo Install dir: $installdestdir
+}
+
+if [[ $# -ne 1 || $1 == "-h" || $1 == "--help" ]]; then
+    printUsage
+    echo
+    printPaths
+    exit
+fi
+
+printPaths
+echo
+
+buildPlugin() {
+    local pluginpath="$1"
+    local pluginname="$(basename $pluginpath)"
+    shift # remaining options are meson options
+
+    if [[ ! -e "$pluginpath/meson.build" ]]; then
+        >&2 echo "Invalid plugin $pluginname (no meson.build found at $pluginpath)"
+        exit 1
+    fi
+
+    echo "Configuring $pluginname found at $pluginpath"
+    local builddir="$basebuilddir/$pluginname"
+
+    meson setup --prefix "$installprefix" "$@" -- "$builddir" "$pluginpath"
+}
+
+PLUGIN_ARG="$1"
+shift #Remaining options are meson options
+
+if [[ $PLUGIN_ARG == "-a" || $PLUGIN_ARG == "--all" ]]; then
+    for plugin in "$pluginroot/*"; do
+        buildPlugin $plugin "$@"
+    done
+else
+    buildPlugin "$pluginroot/$PLUGIN_ARG" "$@"
+fi
+
