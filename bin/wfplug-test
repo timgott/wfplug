@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+# Plugin test script
+
+set -e
+
+# find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
+source "$(dirname "$0")/paths.sh"
+source "$basepath/activate" >/dev/null
+
+printUsage() {
+    echo "Usage:"
+    echo "$(basename "$0") PLUGIN [CONFIG_NAME=minimal]"
+    echo "Compile plugin and run wayfire using the testconfig CONFIG_NAME.ini"
+    echo "If the plugin does not have a testconfig it is generated from the template automatically."
+    echo
+    echo "Options:"
+    echo "  --list: list all configs"
+    echo "  --keep: save config generated from template in plugin testconfig"
+}
+
+POSITIONAL_ARGS=()
+
+LIST=false
+KEEP=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+    -h|--help)
+        printUsage
+        exit
+        ;;
+    -c|--config)
+        shift
+        shift
+        ;;
+    -l|--list)
+        LIST=true
+        shift
+        ;;
+    -k|--keep)
+        KEEP=true
+        shift
+        ;;
+    -*|--*)
+        echo Invalid option $1
+        printUsage
+        exit 1
+        ;;
+    *)
+        POSITIONAL_ARGS+="$1"
+        shift
+        ;;
+    esac
+done
+
+#set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+if [[ ${#POSITIONAL_ARGS[*]} == 0 ]]; then
+    echo "Missing plugin name argument"
+    printUsage
+    exit 1
+fi
+
+if [[ ${#POSITIONAL_ARGS[*]} -gt 2 ]]; then
+    echo "Only two positional arguments (plugin, config) allowed"
+    printUsage
+    exit 1
+fi
+
+PLUGIN=${POSITIONAL_ARGS[0]:?"Missing plugin name argument"}
+CONFIG_NAME=${POSITIONAL_ARGS[1]:-minimal}
+
+# Compile
+wfplug-compile "$PLUGIN"
+
+# test config search paths
+pluginpath="$pluginroot/$PLUGIN"
+
+if [[ ! -d "$pluginpath" ]]; then
+    echo Plugin $PLUGIN does not exist
+    exit 4
+fi
+
+pluginconfigpath="$pluginpath/testconfig"
+templateconfigpath="$basepath/template/testconfig"
+
+if [[ $LIST == true ]]; then
+    shopt -s failglob # fail on empty glob
+    echo "Plugin specific configs ($pluginconfigpath):"
+    for f in "$pluginconfigpath"/*.ini; do
+        echo "- $(basename --suffix .ini "$f")"
+    done
+    echo
+    echo "Template configs ($templateconfigpath):"
+    for f in "$templateconfigpath"/*.ini; do
+        echo "- $(basename --suffix .ini "$f")"
+    done
+    exit
+fi
+
+# try plugin testconfig dir
+testconfig="$pluginconfigpath/$CONFIG_NAME.ini"
+if [[ ! -f "$testconfig" ]]; then
+    # Generate config from template
+    template="$templateconfigpath/$CONFIG_NAME.ini"
+    if [[ ! -f "$template" ]]; then
+        echo "No plugin config at $testconfig, and no template config at $template found."
+        echo "Run with --list option to show available configs."
+        exit 2
+    fi
+    echo Generating config from template "$template"
+    if [[ KEEP != true ]]; then
+        # put templated config into temp file
+        testconfig=$(mktemp --tmpdir $CONFIG_NAME.$PLUGIN_NAME.XXXX.ini)
+    else
+        mkdir $pluginconfigpath
+    fi
+    set -x
+    export TEMPLATE_PLUGIN_NAME="$PLUGIN"
+    <"$template" envsubst '$TEMPLATE_PLUGIN_NAME' >"$testconfig"
+fi
+echo Using config "$testconfig"
+
+# Start wayfire with config file and wayfireplug enabled
+exec wfplug-run_with_env wayfire --config $testconfig

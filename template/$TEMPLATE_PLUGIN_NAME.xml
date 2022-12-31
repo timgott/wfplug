@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<wayfire>
+	<plugin name="$TEMPLATE_PLUGIN_NAME">
+		<!-- TODO: Add short human readable name -->
+		<_short>$TEMPLATE_PLUGIN_NAME</_short>
+		<!-- TODO: Add description what your plugin does -->
+		<_long>My new plugin without description.</_long>
+		<!-- TODO: Choose a fitting category -->
+		<category>Utility</category>
+
+		<!-- TODO: Define options if necessary. See metadata of existing plugins for more examples.
+		<option name="magic_number" type="int">
+			<_short>Magic number</_short>
+			<_long>An example integer option.</_long>
+			<default>77</default>
+			<min>42</min>
+		</option>
+		-->
+	</plugin>
+</wayfire>

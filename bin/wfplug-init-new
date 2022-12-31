@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+
+set -e
+
+# find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
+source "$(dirname "$0")/paths.sh"
+
+printUsage() {
+    echo "$(basename "$0") PLUGIN_NAME"
+    echo "Initializes a new plugin with the name PLUGIN_NAME from the plugin template."
+}
+
+if [[ $# -ne 1 || $1 == "-h" || $1 == "--help" ]]; then
+    printUsage
+    exit
+fi
+
+pluginname=$1
+
+templatepath="$basepath/template"
+outpath="$pluginroot/$pluginname"
+
+echo "Creating plugin $pluginname at $outpath..."
+
+mkdir $outpath
+mkdir $outpath/testconfig
+
+export TEMPLATE_PLUGIN_NAME="$pluginname"
+export TEMPLATE_PLUGIN_CLASS_NAME="${pluginname}_t"
+
+shopt -s failglob
+for f in "$templatepath"/{*.cpp,*.xml,meson.build,testconfig/*.ini,.gitignore,README.md}; do
+    # variables to substitute
+    substpattern='$TEMPLATE_PLUGIN_NAME $TEMPLATE_PLUGIN_CLASS_NAME'
+    # rename files that contain plugin name
+    fname=$(realpath --relative-to="$templatepath" "$f")
+    outf=$(echo $fname | envsubst "$substpattern")
+    # substitute in template and write to target file
+    echo + Applying template $fname to $outf
+    <"$f" envsubst "$substpattern" >"$outpath/$outf"
+done
+
+# Init git repo
+echo Entering project folder
+pushd $outpath
+# subshell that prints commands that are executed
+(
+    set -x
+    git init
+    git add --all
+    git commit --message "Create from wfplug plugin template"
+)
+echo Leaving project folder
+popd
+
+echo "Folder $(realpath --relative-to="$basepath" $outpath) initialized."
+echo "Start by modifying '$pluginname.xml' and '$pluginname.cpp'. Compile with 'wfplug-compile $pluginname'."

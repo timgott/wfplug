@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+# cleans build and install of plugin
+
+set -e
+
+# find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
+source "$(dirname "$0")/paths.sh"
+
+printUsage() {
+    echo "$(basename "$0") PLUGIN_NAME"
+    echo "Cleans all build files for PLUGIN_NAME."
+}
+
+if [[ $# -ne 1 || $1 == "-h" || $1 == "--help" ]]; then
+    printUsage
+    exit
+fi
+
+builddir="$basebuilddir/$1"
+
+if [[ ! -d "$builddir" ]]; then
+    echo "builddir "$builddir" does not exist, nothing to clean"
+    exit
+fi
+
+set +e
+set -x
+echo Trying to uninstall
+ninja -C "$builddir" uninstall
+echo
+echo Removing builddir
+rm -r "$builddir"
+if [[ ! -d "$builddir" ]]; then
+    echo Done
+fi

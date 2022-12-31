@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+
+# runs meson setup, meson compile and meson install
+
+set -e
+
+# find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
+source "$(dirname "$0")/paths.sh"
+
+printUsage() {
+    echo "$(basename "$0") PLUGIN_NAME [meson compile options]"
+    echo "$(basename "$0") --all [meson compile options]"
+    echo "Compiles meson project at plugins/PLUGIN_NAME. If --all is given, compiles all plugins instead."
+}
+
+printPaths() {
+    echo Plugin path: $pluginroot
+    echo State path: $statepath
+    echo Build cache: $basebuilddir
+    echo Install dir: $installdestdir
+}
+
+if [[ $# -ne 1 || $1 == "-h" || $1 == "--help" ]]; then
+    printUsage
+    echo
+    printPaths
+    exit
+fi
+
+printPaths
+echo
+
+compilePlugin() {
+    local pluginpath="$1"
+    local pluginname="$(basename $pluginpath)"
+    shift # remaining options are meson options
+
+    if [[ ! -f "$pluginpath/meson.build" ]]; then
+        >&2 echo "Invalid plugin $pluginname (no meson.build found at $pluginpath)"
+        exit 1
+    fi
+
+    local builddir="$basebuilddir/$pluginname"
+
+    if [[ ! -d "$builddir" ]]; then
+        echo "Configuring $pluginname from $pluginpath"
+        echo "Initializing builddir: $builddir"
+        meson setup --prefix "$installprefix" -- "$builddir" "$pluginpath"
+    fi
+
+    echo "Compiling $pluginname at $builddir"
+    meson compile -C "$builddir" "$@"
+    echo "Installing $pluginname to $installdestdir"
+    meson install -C "$builddir" --only-changed --destdir $installdestdir
+}
+
+PLUGIN_ARG="$1"
+shift # Remaining options are meson options
+
+if [[ $PLUGIN_ARG == "-a" || $PLUGIN_ARG == "--all" ]]; then
+    for plugin in "$pluginroot/*"; do
+        compilePlugin "$plugin" "$@"
+    done
+else
+    compilePlugin "$pluginroot/$PLUGIN_ARG" "$@"
+fi
+

@@ -1,0 +1,7 @@
+# Add wfplug to PATH
+# run as `source bin/activate` from shell
+
+WFPLUG_PATH="$(realpath --no-symlinks "$(dirname "$0")")"
+WFPLUG_BIN_PATH="$WFPLUG_PATH/bin"
+export PATH=$WFPLUG_BIN_PATH:$PATH
+echo Added "$WFPLUG_BIN_PATH" to PATH
