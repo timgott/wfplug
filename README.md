@@ -1,6 +1,8 @@
-# wfplug 
+# wfplug :electric_plug::fire:
 
-Plugin build and development tool for Wayfire, the configurable Wayland window manager.
+Plugin build and development tool for Wayfire, the extendable Wayland window manager.
+
+It makes it very easy to create new plugins, build plugins and try them with isolated config.
 
 # Dependencies
 
@@ -16,17 +18,7 @@ Clone this repo:
 git clone https://www.github.com/timgott/wfplug
 ```
 
-## Using wfplug plugins in wayfire
-
-Run wayfire with the following command to use plugins installed in wfplug:
-
-```
-/path/to/wfplug/bin/wfplug-run_with_env wayfire
-```
-
-Modify your startup script or .desktop file accordingly.
-
-## Using wplug commands
+### Enabling wplug commands
 
 To use `wfplug-*` commands run from your shell in the wfplug folder:
 
@@ -35,6 +27,16 @@ source activate
 ```
 
 This will put the wfplug bin folder into your `$PATH`.
+
+### Running wayfire with wfplug
+
+Start wayfire with the following command to use plugins installed in wfplug:
+
+```bash
+/path/to/wfplug/bin/wfplug-run_with_env wayfire
+```
+
+Modify your startup script or .desktop file accordingly.
 
 
 # Basic Usage
@@ -67,13 +69,6 @@ wfplug-erase <PLUGIN>
 
 Delete the entire build/ folder to clean up all build state and installations.
 
-## Testing a plugin
-
-```
-wfplug-test <PLUGIN>
-```
-
-It compiles the plugin and generates a config automatically from the default plugin template if the plugin does not ship one. You can add custom configs (see `wfplug-test --help`).
 
 
 ## Creating a new plugin
@@ -82,5 +77,13 @@ It compiles the plugin and generates a config automatically from the default plu
 wfplug-new <NAME>
 ```
 
-The generated plugin is empty but ready to compile and install with `wfplug-compile`, as well as for testing with `wfplug-test`.
+The generated plugin is empty but ready to compile and install with `wfplug-compile`, as well as for testing with `wfplug-test`. You can get started on the code without further setup. See existing plugins and wayfire docs if you want to learn how to write a plugin.
 
+
+## Testing a plugin
+
+```
+wfplug-test <PLUGIN>
+```
+
+It compiles the plugin and generates a config automatically from the default plugin template if the plugin does not ship one. You can add custom configs (see `wfplug-test --help`).
