@@ -10,24 +10,31 @@ Plugin build and development tool for Wayfire, the configurable Wayland window m
 
 # Setup
 
-Clone this repo
+Clone this repo:
 
 ```bash
 git clone https://www.github.com/timgott/wfplug
 ```
 
+## Using wfplug plugins in wayfire
 
-Change your wayfire startup script or wayfire.desktop file to run
+Run wayfire with the following command to use plugins installed in wfplug:
 
 ```
 /path/to/wfplug/bin/wfplug-run_with_env wayfire
 ```
 
-Put the `wfplug-*` commands into your `$PATH` by running in the wfplug folder from your shell.
+Modify your startup script or .desktop file accordingly.
+
+## Using wplug commands
+
+To use `wfplug-*` commands run from your shell in the wfplug folder:
 
 ```bash
 source activate
 ```
+
+This will put the wfplug bin folder into your `$PATH`.
 
 
 # Basic Usage
@@ -50,8 +57,15 @@ Compile and install with:
 wfplug-compile <PLUGIN>
 ```
 
-where `<PLUGIN>` is the name of the folder containing the plugin.
+where `<PLUGIN>` is the name of the folder containing the plugin. It is installed into the build/out folder in the wfplug directory, your system root is not touched.
 
+Uninstall and clean with
+
+```
+wfplug-erase <PLUGIN>
+```
+
+Delete the entire build/ folder to clean up all build state and installations.
 
 ## Testing a plugin
 
