@@ -22,8 +22,6 @@ printPaths() {
 
 if [[ $# -ne 1 || $1 == "-h" || $1 == "--help" ]]; then
     printUsage
-    echo
-    printPaths
     exit
 fi
 
@@ -32,7 +30,7 @@ echo
 
 compilePlugin() {
     local pluginpath="$1"
-    local pluginname="$(basename $pluginpath)"
+    local pluginname="$(basename "$pluginpath")"
     shift # remaining options are meson options
 
     if [[ ! -f "$pluginpath/meson.build" ]]; then
@@ -58,9 +56,11 @@ PLUGIN_ARG="$1"
 shift # Remaining options are meson options
 
 if [[ $PLUGIN_ARG == "-a" || $PLUGIN_ARG == "--all" ]]; then
-    for plugin in "$pluginroot/*"; do
+    for plugin in "$pluginroot"/*/; do
         compilePlugin "$plugin" "$@"
+        echo
     done
+    echo Done
 else
     compilePlugin "$pluginroot/$PLUGIN_ARG" "$@"
 fi
