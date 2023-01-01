@@ -117,10 +117,15 @@ if [[ ! -f "$testconfig" ]]; then
         mkdir $pluginconfigpath
     fi
 
-    PLUGIN_LOAD_NAME="$("$basepath/utils/plugin_load_name.sh" "$PLUGIN")"
+    plugin_targets=($("$basepath/utils/plugin_target_names.sh" "$PLUGIN"))
+    if [[ ${#plugin_targets[*]} -gt 1 ]]; then
+        >&2 echo "Warning: Multiple plugin targets detected, using all"
+        #exit 3
+    fi
 
-    set -x
-    export TEMPLATE_PLUGIN_NAME="$PLUGIN_LOAD_NAME"
+    echo "Enabling plugin(s) in template: ${plugin_targets[*]}"
+
+    export TEMPLATE_PLUGIN_NAME="${plugin_targets[*]}"
     <"$template" envsubst '$TEMPLATE_PLUGIN_NAME' >"$testconfig"
 fi
 echo Using config "$testconfig"
