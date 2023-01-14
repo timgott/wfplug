@@ -43,7 +43,7 @@ compilePlugin() {
     if [[ ! -d "$builddir" ]]; then
         echo "Configuring $pluginname from $pluginpath"
         echo "Initializing builddir: $builddir"
-        meson setup --prefix "$installprefix" -- "$builddir" "$pluginpath"
+        meson setup --buildtype debugoptimized --prefix "$installprefix" -- "$builddir" "$pluginpath"
     fi
 
     echo "Compiling $pluginname at $builddir"
