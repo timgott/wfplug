@@ -10,8 +10,9 @@ source "$basepath/activate" >/dev/null
 
 printUsage() {
     echo "Usage:"
-    echo "$(basename "$0") PLUGIN [CONFIG_NAME=minimal]"
+    echo "$(basename "$0") PLUGIN [CONFIG_NAME]"
     echo "Compile plugin and run wayfire using the testconfig CONFIG_NAME.ini"
+    echo "CONFIG_NAME defaults to \"minimal\""
     echo "If the plugin does not have a testconfig it is generated from the template automatically."
     echo
     echo "Options:"
@@ -30,10 +31,6 @@ while [[ $# -gt 0 ]]; do
         printUsage
         exit
         ;;
-    -c|--config)
-        shift
-        shift
-        ;;
     -l|--list)
         LIST=true
         shift
@@ -48,7 +45,7 @@ while [[ $# -gt 0 ]]; do
         exit 1
         ;;
     *)
-        POSITIONAL_ARGS+="$1"
+        POSITIONAL_ARGS+=("$1")
         shift
         ;;
     esac
@@ -70,9 +67,6 @@ fi
 
 PLUGIN="${POSITIONAL_ARGS[0]:?"Missing plugin name argument"}"
 CONFIG_NAME="${POSITIONAL_ARGS[1]:-minimal}"
-
-# Compile
-wfplug-compile "$PLUGIN"
 
 # test config search paths
 pluginpath="$pluginroot/$PLUGIN"
@@ -129,6 +123,9 @@ if [[ ! -f "$testconfig" ]]; then
     <"$template" envsubst '$TEMPLATE_PLUGIN_NAME' >"$testconfig"
 fi
 echo Using config "$testconfig"
+
+# Compile
+wfplug-compile "$PLUGIN"
 
 # Start wayfire with config file and wayfireplug enabled
 exec wfplug-run_with_env wayfire --debug --config "$testconfig"
