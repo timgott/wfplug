@@ -40,7 +40,7 @@ compilePlugin() {
 
     local builddir="$basebuilddir/$pluginname"
 
-    if [[ ! -d "$builddir" ]]; then
+    if [[ ! -f "$builddir/build.ninja" ]]; then
         echo "Configuring $pluginname from $pluginpath"
         echo "Initializing builddir: $builddir"
         meson setup --buildtype debugoptimized --prefix "$installprefix" -- "$builddir" "$pluginpath"
