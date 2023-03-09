@@ -4,6 +4,8 @@ Plugin manager for Wayfire, the extendable Wayland window manager.
 
 It makes it easy to install plugins, and test them with isolated config. It also can setup a new plugin quickly from a template.
 
+Works with any project that contains a wayfire plugin and uses meson.
+
 # Dependencies
 
 - `wayfire`
