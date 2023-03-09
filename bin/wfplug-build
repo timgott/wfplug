@@ -28,28 +28,68 @@ fi
 printPaths
 echo
 
+wayfire_prefix=$(pkg-config wayfire --variable prefix)
+wayfire_plugindir=$(pkg-config wayfire --variable plugindir)
+wayfire_metadatadir=$(pkg-config wayfire --variable metadatadir)
+
 compilePlugin() {
     local pluginpath="$1"
     local pluginname="$(basename "$pluginpath")"
     shift # remaining options are meson options
 
+    # check whether plugin exists
     if [[ ! -f "$pluginpath/meson.build" ]]; then
         >&2 echo "Invalid plugin $pluginname (no meson.build found at $pluginpath)"
         exit 1
     fi
 
-    local builddir="$basebuilddir/$pluginname"
+    # set paths
+    local builddir="$(get_plugin_builddir "$pluginname")"
+    local installdestdir="$(get_plugin_builddir "$pluginname")"
+    local install_log="$(get_plugin_installlog "$pluginname")"
 
     if [[ ! -f "$builddir/build.ninja" ]]; then
         echo "Configuring $pluginname from $pluginpath"
         echo "Initializing builddir: $builddir"
-        meson setup --buildtype debugoptimized --prefix "$installprefix" -- "$builddir" "$pluginpath"
+        meson setup --buildtype debugoptimized --prefix "$wayfire_prefix" -- "$builddir" "$pluginpath"
     fi
 
     echo "Compiling $pluginname at $builddir"
     meson compile -C "$builddir" "$@"
     echo "Installing $pluginname to $installdestdir"
-    meson install -C "$builddir" --only-changed --destdir $installdestdir
+    meson install -C "$builddir" --only-changed --destdir "$installdestdir"
+
+    cleanOldInstallation "$install_log"
+    installPluginFiles "$installdestdir" | tee $install_log | awk '{print "Linked "$1}'
+}
+
+cleanOldInstallation() {
+    local install_log=$1
+    if [[ -e "$install_log" ]]; then
+        for f in $(<"$install_log"); do
+            if [[ -L "$f" ]]; then
+                echo "Cleaning up $f"
+                rm "$f"
+            fi
+        done
+    fi
+}
+
+installPluginFiles() {
+    local installdir=$1
+    shopt -s failglob
+    mkdir -p "$wfplug_plugin_bin_path"
+    mkdir -p "$wfplug_plugin_xml_path"
+    for f in "$installdir/$wayfire_plugindir"/*.so; do
+        local outpath="$wfplug_plugin_bin_path/$(basename $f)"
+        echo $outpath
+        ln --symbolic -T $f $outpath
+    done
+    for f in $installdir/$wayfire_metadatadir/*.xml; do
+        local outpath="$wfplug_plugin_xml_path/$(basename $f)"
+        echo $outpath
+        ln --symbolic -T $f $outpath
+    done
 }
 
 PLUGIN_ARG="$1"

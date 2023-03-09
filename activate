@@ -1,7 +1,22 @@
 # Add wfplug to PATH
-# run as `source bin/activate` from shell
+# run as `source bin/activate` from shell (do not run directly)
 
-WFPLUG_PATH="$(realpath --no-symlinks "$(dirname "$0")")"
+WFPLUG_PATH="$(realpath -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")")"
 WFPLUG_BIN_PATH="$WFPLUG_PATH/bin"
 export PATH=$WFPLUG_BIN_PATH:$PATH
-echo Added "$WFPLUG_BIN_PATH" to PATH
+echo "Added "$WFPLUG_BIN_PATH" to PATH"
+
+# allow running wayfire without wfplug-run_with_env
+export $(
+    # run paths.sh in subshell to avoid cluttering the environment
+    source "$WFPLUG_BIN_PATH/paths.sh";
+    echo WAYFIRE_PLUGIN_PATH=$WAYFIRE_PLUGIN_PATH;
+    echo WAYFIRE_PLUGIN_XML_PATH=$WAYFIRE_PLUGIN_XML_PATH;
+)
+
+# shell helper function
+wfplug-goto-plugins() {
+    local pluginroot=$(source "$WFPLUG_BIN_PATH/paths.sh"; echo $pluginroot)
+    pushd "$pluginroot/$1"
+    echo "Entered plugin folder, run 'popd' to return"
+}

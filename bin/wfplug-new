@@ -54,4 +54,4 @@ echo Leaving project folder
 popd
 
 echo "Folder $(realpath --relative-to="$basepath" $outpath) initialized."
-echo "Start by modifying '$pluginname.xml' and '$pluginname.cpp'. Compile with 'wfplug-compile $pluginname'."
+echo "Start by modifying '$pluginname.xml' and '$pluginname.cpp'. Compile with 'wfplug-build $pluginname'."

@@ -11,7 +11,7 @@ plugin_dir_name="$1"
 
 targets_data="$basebuilddir/$plugin_dir_name/meson-info/intro-targets.json"
 if [[ ! -e "$targets_data" ]]; then
-    echo "Plugin $1 not installed. Try: wfplug-compile $1"
+    echo "Plugin $1 not installed. Try: wfplug-build $1"
     exit 1
 fi
 

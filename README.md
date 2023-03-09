@@ -1,8 +1,8 @@
 # wfplug :electric_plug::fire:
 
-Plugin build and development tool for Wayfire, the extendable Wayland window manager.
+Plugin manager for Wayfire, the extendable Wayland window manager.
 
-It makes it very easy to create new plugins, build plugins and try them with isolated config.
+It makes it easy to install plugins, and test them with isolated config. It also can setup a new plugin quickly from a template.
 
 # Dependencies
 
@@ -18,17 +18,45 @@ Clone this repo:
 git clone https://www.github.com/timgott/wfplug
 ```
 
-### Enabling wplug commands
+# Basic Usage
 
-To use `wfplug-*` commands run from your shell in the wfplug folder:
+## Enabling wplug
+
+To use `wfplug-*` commands run from your shell (with your wfplug path):
 
 ```bash
-source activate
+source ~/wfplug/activate
 ```
 
-This will put the wfplug bin folder into your `$PATH`.
+## Installing a plugin
 
-### Running wayfire with wfplug
+```bash
+wfplug-goto-plugins
+git clone ...
+```
+
+Compile and install with:
+
+```
+wfplug-build <PLUGIN>
+```
+
+where `<PLUGIN>` is the name of the subfolder containing the plugin. It is installed in the build/install/ folder, your system root is not touched.
+
+## Clean up plugin
+
+To uninstall and delete build files:
+
+```
+wfplug-clean <PLUGIN>
+```
+
+Delete the entire build/ folder to clean up all build state and installations.
+
+You have to manually remove the plugin from the plugins/ folder.
+
+
+### Running wayfire with plugins
 
 Start wayfire with the following command to use plugins installed in wfplug:
 
@@ -36,39 +64,18 @@ Start wayfire with the following command to use plugins installed in wfplug:
 /path/to/wfplug/bin/wfplug-run_with_env wayfire
 ```
 
-Modify your startup script or .desktop file accordingly.
-
-
-# Basic Usage
-
-The following requires that you have added the commands to your `$PATH` as described above.
-
-
-## Installing a plugin
-
-Put the Wayfire plugin into a subfolder of the plugins/ folder (e.g. fetch it with `git clone`)
-
-```bash
-cd plugins
-git clone ...
-```
-
-Compile and install with:
+Modify your startup script or .desktop file accordingly. For example, you can put the following file into `/usr/local/share/wayland-sessions/wayfire-wfplug.desktop`:
 
 ```
-wfplug-compile <PLUGIN>
+[Desktop Entry]
+Version=0.8
+Name=Wayfire (wfplug)
+Comment=Use this session to run Wayfire with wfplug plugins
+Exec=/INSERT_PATH_HERE/wfplug/bin/wfplug-run_with_env wayfire
+Type=Application
 ```
 
-where `<PLUGIN>` is the name of the folder containing the plugin. It is installed into the build/out folder in the wfplug directory, your system root is not touched.
-
-Uninstall and clean with
-
-```
-wfplug-erase <PLUGIN>
-```
-
-Delete the entire build/ folder to clean up all build state and installations.
-
+See also `wfplug-test` to run a plugin in isolation.
 
 
 ## Creating a new plugin

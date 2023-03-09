@@ -3,8 +3,13 @@
 set -e
 
 printUsage() {
-    print "$(basename "$0") [COMMAND]"
-    print "Sets environment variables to enable wayfireplug and runs COMMAND"
+    cmdname="$(basename "$0")"
+    echo "$cmdname [COMMAND]"
+    echo "Runs COMMAND with wfplug environment"
+    echo
+    echo "Example:"
+    echo "    $cmdname wayfire"
+    exit 1
 }
 
 if [[ -z $1 || $1 == "-h" || $1 == "--help" ]]; then
@@ -14,14 +19,12 @@ fi
 # find $basepath, $pluginroot, $statepath, $basebuilddir, $installdestdir, $installprefix
 source "$(dirname "$0")/paths.sh"
 
-fullprefix=${installdestdir}${installprefix}
-
-if [[ ! -e $fullprefix ]]; then
+if [[ ! -e "$wfplug_plugin_bin_path" ]]; then
     >&2 echo wayfireplug warning: No compiled plugin found! Add plugins and run compile_plugins.
 fi
 
-export WAYFIRE_PLUGIN_PATH="$fullprefix/lib/wayfire":"$fullprefix/lib64/wayfire":$WAYFIRE_PLUGIN_PATH
-export WAYFIRE_PLUGIN_XML_PATH="$fullprefix/share/wayfire/metadata":$WAYFIRE_PLUGIN_XML_PATH
+export WAYFIRE_PLUGIN_PATH
+export WAYFIRE_PLUGIN_XML_PATH
 
 echo "Enabled wfplug"
 echo "wayfire plugin path: $WAYFIRE_PLUGIN_PATH"

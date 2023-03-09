@@ -27,7 +27,22 @@ fi
 set +e
 set -x
 echo Trying to uninstall
-ninja -C "$builddir" uninstall
+cleanOldInstallation() {
+    local install_log=$1
+    if [[ -e "$install_log" ]]; then
+        for f in $(<"$install_log"); do
+            if [[ -L "$f" ]]; then
+                echo "Removing $f"
+                rm "$f"
+            else
+                echo "Not a valid link: $f"
+            fi
+        done
+    fi
+}
+
+cleanOldInstallation "$builddir/wfplug_installed.txt"
+
 echo
 echo Removing builddir
 rm -r "$builddir"
