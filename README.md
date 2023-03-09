@@ -6,13 +6,13 @@ It makes it easy to install plugins, and test them with isolated config. It also
 
 Works with any project that contains a wayfire plugin and uses meson.
 
-# Dependencies
+## Dependencies
 
 - `wayfire`
 - `meson`
 - `jq`
 
-# Setup
+## Setup
 
 Clone this repo:
 
@@ -20,9 +20,9 @@ Clone this repo:
 git clone https://www.github.com/timgott/wfplug
 ```
 
-# Basic Usage
+## Basic Usage
 
-## Enabling wplug
+### Enabling wplug
 
 To use `wfplug-*` commands run from your shell (with your wfplug path):
 
@@ -30,7 +30,7 @@ To use `wfplug-*` commands run from your shell (with your wfplug path):
 source ~/wfplug/activate
 ```
 
-## Installing a plugin
+### Installing a plugin
 
 ```bash
 wfplug-goto-plugins
@@ -45,7 +45,7 @@ wfplug-build <PLUGIN>
 
 where `<PLUGIN>` is the name of the subfolder containing the plugin. It is installed in the build/install/ folder, your system root is not touched.
 
-## Clean up plugin
+### Clean up plugin
 
 To uninstall and delete build files:
 
@@ -80,7 +80,7 @@ Type=Application
 See also `wfplug-test` to run a plugin in isolation.
 
 
-## Creating a new plugin
+### Creating a new plugin
 
 ```
 wfplug-new <NAME>
@@ -89,7 +89,7 @@ wfplug-new <NAME>
 The generated plugin is empty but ready to compile and install with `wfplug-compile`, as well as for testing with `wfplug-test`. You can get started on the code without further setup. See existing plugins and wayfire docs if you want to learn how to write a plugin.
 
 
-## Testing a plugin
+### Testing a plugin
 
 ```
 wfplug-test <PLUGIN>
