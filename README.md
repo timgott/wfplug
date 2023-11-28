@@ -45,17 +45,21 @@ wfplug-build <PLUGIN>
 
 where `<PLUGIN>` is the name of the subfolder containing the plugin. It is installed in the build/install/ folder, your system root is not touched.
 
-### Clean up plugin
+### Uninstalling a plugin
 
-To uninstall and delete build files:
+To uninstall and delete build of one plugin:
 
 ```
-wfplug-clean <PLUGIN>
+wfplug-uninstall <PLUGIN>
 ```
 
-Delete the entire build/ folder to clean up all build state and installations.
+To delete the entire build/ folder to clean up all build state and installations:
 
-You have to manually remove the plugin from the plugins/ folder.
+```
+wfplug-clean
+```
+
+You have to manually remove the plugin from the plugins/ folder if you want to remove the source.
 
 
 ### Running wayfire with plugins

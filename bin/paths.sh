@@ -11,8 +11,12 @@ wfplug_plugin_bin_path="$statepath/install/plugins"
 wfplug_plugin_xml_path="$statepath/install/xml"
 
 if [[ ! "$WAYFIRE_PLUGIN_PATH" =~ "$wfplug_plugin_bin_path" ]]; then
-    WAYFIRE_PLUGIN_PATH="$wfplug_plugin_bin_path":$WAYFIRE_PLUGIN_PATH
-    WAYFIRE_PLUGIN_XML_PATH="$wfplug_plugin_xml_path":$WAYFIRE_PLUGIN_XML_PATH
+    #WAYFIRE_PLUGIN_PATH="$wfplug_plugin_bin_path":$WAYFIRE_PLUGIN_PATH
+    #WAYFIRE_PLUGIN_XML_PATH="$wfplug_plugin_xml_path":$WAYFIRE_PLUGIN_XML_PATH
+
+    # remove system paths to avoid confusion with isolated test environment
+    WAYFIRE_PLUGIN_PATH="$wfplug_plugin_bin_path"
+    WAYFIRE_PLUGIN_XML_PATH="$wfplug_plugin_xml_path"
 fi
 
 get_plugin_builddir() {

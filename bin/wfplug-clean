@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# cleans build and install of plugin
+# removes entire build dir
 
 set -e
 
@@ -12,40 +12,13 @@ printUsage() {
     echo "Cleans all build files for PLUGIN_NAME."
 }
 
-if [[ $# -ne 1 || $1 == "-h" || $1 == "--help" ]]; then
+if [[ $# -ne 0 || $1 == "-h" || $1 == "--help" ]]; then
     printUsage
     exit
 fi
 
-builddir="$basebuilddir/$1"
-
-if [[ ! -d "$builddir" ]]; then
-    echo "builddir "$builddir" does not exist, nothing to clean"
-    exit
-fi
-
-set +e
-set -x
-echo Trying to uninstall
-cleanOldInstallation() {
-    local install_log=$1
-    if [[ -e "$install_log" ]]; then
-        for f in $(<"$install_log"); do
-            if [[ -L "$f" ]]; then
-                echo "Removing $f"
-                rm "$f"
-            else
-                echo "Not a valid link: $f"
-            fi
-        done
-    fi
-}
-
-cleanOldInstallation "$builddir/wfplug_installed.txt"
-
-echo
-echo Removing builddir
-rm -r "$builddir"
-if [[ ! -d "$builddir" ]]; then
+echo "Deleting $statepath"
+rm -r "$statepath"
+if [[ ! -d "$statepath" ]]; then
     echo Done
 fi
